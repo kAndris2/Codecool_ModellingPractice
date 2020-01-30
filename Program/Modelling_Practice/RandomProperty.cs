@@ -26,7 +26,7 @@ namespace Modelling_Practice
 
         public string SetBrand()
         {
-            var brand_list = new List<string>() { "Fiat", "Nissan", "Toyota", "Mitsubushi", "Bmw", "Audi", "Mercedes", "Volkswagen", "Opel", "Mazda",
+            var brand_list = new List<string>() { "Fiat", "Nissan", "Toyota", "Mitsubishi", "Bmw", "Audi", "Mercedes", "Volkswagen", "Opel", "Mazda",
                                                   "Hyundai", "Hummer", "Corvette", "Crysler", "Ferrari", "Lamborghini", "Bugatti", "Koenigsegg", "Kia",
                                                   "Mclaren", "Trabant", "Jeep", "Volvo", "Subaru", "Mini", "Dodge", "Suzuki", "Porsche", "Acura", "Lada",
                                                   "Peugeot", "Renault", "Ford", "Jaguar", "Maserati", "Saab", "Honda", "Lexus", "Daewoo", "Lancia", "Bentley",

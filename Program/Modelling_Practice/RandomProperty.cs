@@ -26,15 +26,19 @@ namespace Modelling_Practice
 
         public string SetBrand()
         {
-            DataManager data = new DataManager();
-            string[] brand_list = data.Import_Data("Brands.csv")[0];
-            return brand_list[random.Next(brand_list.Length)];
+            var brand_list = new List<string>() { "Fiat", "Nissan", "Toyota", "Mitsubushi", "Bmw", "Audi", "Mercedes", "Volkswagen", "Opel", "Mazda",
+                                                  "Hyundai", "Hummer", "Corvette", "Crysler", "Ferrari", "Lamborghini", "Bugatti", "Koenigsegg", "Kia",
+                                                  "Mclaren", "Trabant", "Jeep", "Volvo", "Subaru", "Mini", "Dodge", "Suzuki", "Porsche", "Acura", "Lada",
+                                                  "Peugeot", "Renault", "Ford", "Jaguar", "Maserati", "Saab", "Honda", "Lexus", "Daewoo", "Lancia", "Bentley",
+                                                  "Infiniti", "Citroen", "Aston martin", "Alfa romeo", "Gmc", "Cadillac", "Land rover", "Pagani", "Rolls royce",
+                                                  "Tesla", "Dacia", "Chevrolet", "Lincoln", "Lotus", "Mg", "Seat", "Skoda", "Smart"};
+            return brand_list[random.Next(brand_list.Count)];
         }
 
         public string SetColor()
         {
-            var colors = new List<string>() {"Black", "White", "Red", "Pink", "Green", "Gray", "Gold", "Silver",
-                                            "Yellow", "Orange", "Blue", "Brown", "Purple", "Lime"};
+            var colors = new List<string>() {"Black", "White", "Red", "Pink", "Green", "Gray", "Gold", "Silver", "Coral", "Navy", "Amber", "Azure",
+                                            "Yellow", "Orange", "Blue", "Brown", "Purple", "Lime", "Peach", "Aqua", "Indigo", "Maroon", "Orchid"};
             return colors[random.Next(colors.Count)];
         }
 

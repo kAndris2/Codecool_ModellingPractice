@@ -4,12 +4,13 @@ using System.Text;
 
 namespace Modelling_Practice
 {
-    class Derby : Race
-    { 
-        public Derby(List<Car> cars)
+    class Drag : Race
+    {
+        public Drag(List<Car> cars)
         {
-            Validity = false;
-            MaxParticipant = 10;
+            Validity = true;
+            MaxParticipant = 3;
+            MinimumSpeed = 260;
             GetRaceDescription();
             Winner = Start(CarSelection(cars));
         }
@@ -20,7 +21,7 @@ namespace Modelling_Practice
 
             foreach (Car car in cars)
             {
-                if (car.Validity == Validity)
+                if (car.Validity == Validity & car.MaxSpeed >= MinimumSpeed)
                 {
                     selection.Add(car);
                 }

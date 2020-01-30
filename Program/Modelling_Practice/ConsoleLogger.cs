@@ -20,7 +20,7 @@ namespace Modelling_Practice
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write("[ERROR]: ");
             Console.ResetColor();
-            Console.Write(message);
+            Console.Write(message + "\n");
             Console.WriteLine();
         }
 

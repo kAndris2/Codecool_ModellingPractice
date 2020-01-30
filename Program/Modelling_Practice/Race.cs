@@ -12,38 +12,17 @@ namespace Modelling_Practice
         public Car Winner { get; protected set; }
         public List<Car> Cars { get; protected set; }
         
-        public abstract void AddCar(Car car);
+        //public abstract void AddCar(Car car);
 
-        public abstract void DoRace();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //public abstract void DoRace();
 
         protected abstract List<Car> CarSelection(List<Car> cars);
 
         protected Car Start(List<Car> cars)
         {
+            if (cars.Count == 0)
+                throw new NullReferenceException("None of these cars meet the requirements!");
+
             Random rand = new Random();
 
             if (cars.Count > MaxParticipant)
@@ -59,5 +38,12 @@ namespace Modelling_Practice
             return cars[rand.Next(cars.Count)];
         }
 
+        protected virtual void GetRaceDescription()
+        {
+            Console.WriteLine($"\n[DESCRIPTION]:\n" +
+                              $" - Validity = {Validity}\n" +
+                              $" - Max participants = {MaxParticipant}\n" +
+                              $" - Minimum speed = {MinimumSpeed}Km/h");
+        }
     }
 }

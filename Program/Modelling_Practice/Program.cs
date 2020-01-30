@@ -47,6 +47,7 @@ namespace Modelling_Practice
                 catch (KeyNotFoundException e) { ManageException(logger, e.Message); }
                 catch (EmptyDatabaseException e) { ManageException(logger, e.Message); }
                 catch (InvalidInputException e) { ManageException(logger, e.Message); }
+                catch (NullReferenceException e) { ManageException(logger, e.Message); }
             }
         }
         public static void HandleMenu()
@@ -165,12 +166,12 @@ namespace Modelling_Practice
                                 else
                                 {
                                     Console.Clear();
-                                    logger.Error($"Your license plate is already exist! ('{temp}')\n");
+                                    logger.Error($"Your license plate is already exist! ('{temp}')");
                                     Console.WriteLine("Please enter another license plate:");
                                 }
                             }
                             else
-                                throw new InvalidInputException($"Invalid license plate format! ('{temp}')\n");
+                                throw new InvalidInputException($"Invalid license plate format! ('{temp}')");
                         }
                     }
                     else if (i == 3)
@@ -184,7 +185,7 @@ namespace Modelling_Practice
                                 if (!char.IsNumber(temp[n]))
                                 {
                                     Console.Clear();
-                                    logger.Error($"The entered value is not a number! ('{temp}')\n");
+                                    logger.Error($"The entered value is not a number! ('{temp}')");
                                     Console.WriteLine("Please enter another value:");
                                     check = false;
                                     break;
@@ -211,7 +212,7 @@ namespace Modelling_Practice
             else if (option == ":list" || option == "3")
             {
                 if (instance.Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!\n");
+                    throw new EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 logger.Info($"There are {instance.Count} cars in the database.\n");
@@ -225,7 +226,7 @@ namespace Modelling_Practice
             else if (option == ":find" || option == "4")
             {
                 if (instance.Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!\n");
+                    throw new EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 Console.WriteLine("What do you want to look for?\n");
@@ -280,7 +281,7 @@ namespace Modelling_Practice
                 Console.WriteLine("Enter the car's license plate:");
                 string plate = Console.ReadLine().ToUpper();
                 if (!Common.CheckValidPlate(instance, plate))
-                    throw new InvalidInputException($"Invalid license plate! ('{plate}')\n");
+                    throw new InvalidInputException($"Invalid license plate! ('{plate}')");
 
                 Console.Clear();
                 string[] properties = new string[] {
@@ -328,13 +329,13 @@ namespace Modelling_Practice
             else if (option == ":remove" || option == "6")
             {
                 if (instance.Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!\n");
+                    throw new EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 Console.WriteLine("Enter the car's license plate:");
                 string plate = Console.ReadLine().ToUpper();
                 if (!Common.CheckValidPlate(instance, plate))
-                    throw new InvalidInputException($"Invalid license plate! ('{plate}')\n");
+                    throw new InvalidInputException($"Invalid license plate! ('{plate}')");
                 Console.Clear();
                 //
                 int index = -1;
@@ -365,7 +366,7 @@ namespace Modelling_Practice
             {
                 Console.Clear();
                 List<string> types = new List<string>() { 
-                                                            "Circuit race",
+                                                            "Illegal race",
                                                             "Derby",
                                                             "Drag race",
                                                             "Custom race" //+Menü
@@ -377,17 +378,17 @@ namespace Modelling_Practice
                 string index = Console.ReadLine();
 
                 if (!int.TryParse(index, out int x))
-                    throw new InvalidInputException($"The entered value is not a number! ('{index}')\n");
+                    throw new InvalidInputException($"The entered value is not a number! ('{index}')");
                 else if (int.Parse(index) > types.Count || int.Parse(index) < 0)
-                    throw new KeyNotFoundException($"There is no such option! ('{index}')\n");
+                    throw new KeyNotFoundException($"There is no such option! ('{index}')");
 
                 Console.Clear();
                 logger.Info($"You have started {types[int.Parse(index) - 1]}.");
                 Race race = null;
 
-                //if (index == "1") { race = new Race(instance); }
-                if (index == "2") race = new Derby(instance);
-                //else if (index == "2") race = new Drag(instance);
+                if (index == "1") { race = new IllegalRace(instance); }
+                else if (index == "2") race = new Derby(instance);
+                else if (index == "3") race = new Drag(instance);
 
                 Console.WriteLine($"\nParticipants: {race.Cars.Count}/{race.MaxParticipant}");
                 foreach (Car car in race.Cars)
@@ -399,7 +400,7 @@ namespace Modelling_Practice
                 return true;
             }
             else
-                throw new KeyNotFoundException($"There is no such option! ('{option}')\n");
+                throw new KeyNotFoundException($"There is no such option! ('{option}')");
         }
 
         public static List<string[]> GetProperties(List<Car> table)

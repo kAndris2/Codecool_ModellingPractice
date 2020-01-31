@@ -62,7 +62,8 @@ namespace Modelling_Practice
                 ":update  - Update car.",
                 ":remove  - Delete car.",
                 ":save    - Saves the simulation to a file.",
-                ":race    - Make a race."
+                ":race    - Make a race.",
+                ":crace   - Make custum race."
             };
 
             for (int i = 0; i < options.Count; i++)
@@ -113,7 +114,7 @@ namespace Modelling_Practice
                 foreach (Car car in cars)
                 {
                     instance.Add(car);
-                    Console.WriteLine(PrintCarProperties(car, false));
+                    Console.WriteLine(Common.PrintCarProperties(car, false));
                 }
                 return true;
             }
@@ -205,7 +206,7 @@ namespace Modelling_Practice
                 instance.Add(new Car(car_data));
                 Console.Clear();
                 logger.Info("You have created a car.\n");
-                Console.WriteLine(PrintCarProperties(instance[instance.Count - 1], true));
+                Console.WriteLine(Common.PrintCarProperties(instance[instance.Count - 1], true));
 
                 return true;
             }
@@ -218,7 +219,7 @@ namespace Modelling_Practice
                 logger.Info($"There are {instance.Count} cars in the database.\n");
                 foreach (Car car in instance)
                 {
-                    Console.WriteLine(PrintCarProperties(car, false));
+                    Console.WriteLine(Common.PrintCarProperties(car, false));
                 }
 
                 return true;
@@ -268,7 +269,7 @@ namespace Modelling_Practice
                         index == 4 && car.Validity.ToString().Equals(search))
                     {
                         count++;
-                        Console.WriteLine(PrintCarProperties(car, false));
+                        Console.WriteLine(Common.PrintCarProperties(car, false));
                     }
                 }
                 logger.Info($"Totally matches: {count}pc");
@@ -319,7 +320,7 @@ namespace Modelling_Practice
 
                         Console.Clear();
                         logger.Info("You have succesfully updated the car's property.\n");
-                        Console.WriteLine(PrintCarProperties(car, true));
+                        Console.WriteLine(Common.PrintCarProperties(car, true));
                         break;
                     }
                 }
@@ -345,7 +346,7 @@ namespace Modelling_Practice
                     if (plate.Equals(car.LicensePlate))
                     {
                         logger.Info("You have removed a car from a database.\n");
-                        Console.WriteLine(PrintCarProperties(car, true));
+                        Console.WriteLine(Common.PrintCarProperties(car, true));
                         break;
                     }
                 }
@@ -365,37 +366,41 @@ namespace Modelling_Practice
             else if (option == ":race" || option == "8")
             {
                 Console.Clear();
-                List<string> types = new List<string>() { 
-                                                            "Illegal race",
-                                                            "Derby",
-                                                            "Drag race",
-                                                            "Custom race" //+Menü
-                                                        };
-                for (int i = 0; i < types.Count; i++)
-                    Console.WriteLine($"{i + 1}. {types[i]}");
+                string index = SelectRace();
 
-                Console.WriteLine("\nSelect a race type by it's index.:");
-                string index = Console.ReadLine();
+                logger.Info($"You have started {GetRaceName(index)}.");
 
-                if (!int.TryParse(index, out int x))
-                    throw new InvalidInputException($"The entered value is not a number! ('{index}')");
-                else if (int.Parse(index) > types.Count || int.Parse(index) < 0)
-                    throw new KeyNotFoundException($"There is no such option! ('{index}')");
+                if (index == "1") new IllegalRace(instance);
+                else if (index == "2") new Derby(instance);
+                else if (index == "3") new Drag(instance);
 
+                return true;
+            }
+            else if (option == ":crace" || option == "9")
+            {
                 Console.Clear();
-                logger.Info($"You have started {types[int.Parse(index) - 1]}.");
-                Race race = null;
 
-                if (index == "1") { race = new IllegalRace(instance); }
-                else if (index == "2") race = new Derby(instance);
-                else if (index == "3") race = new Drag(instance);
-
-                Console.WriteLine($"\nParticipants: {race.Cars.Count}/{race.MaxParticipant}");
-                foreach (Car car in race.Cars)
+                Custom race = new Custom();
+                int choose = -1;
+                while (choose != 0)
                 {
-                    Console.WriteLine(PrintCarProperties(car, false));
+                    for (int i = 0; i < instance.Count; i++)
+                        Console.WriteLine($"({i + 1}). {Common.PrintCarProperties(instance[i], false)}");
+
+                    string temp = Console.ReadLine();
+                    if (!int.TryParse(temp, out choose))
+                        throw new InvalidInputException($"The entered value is not a number! ('{temp}')");
+                    else
+                        choose = int.Parse(temp);
+
+                    if (choose >= 1 && choose <= instance.Count - 1)
+                        if (!race.GetRaceCars().Contains(instance[choose - 1])) //Itt a hiba!
+                            race.AddCar(instance[choose - 1]);
+                        else
+                            logger.Error("This car is already participate in the race!\n");
+                    else
+                        throw new KeyNotFoundException($"There is no such option! ('{choose}')");
                 }
-                Console.WriteLine($"\nThe winner is {race.Winner.LicensePlate} - {race.Winner.Brand}!");
 
                 return true;
             }
@@ -418,28 +423,6 @@ namespace Modelling_Practice
                 result.Add(temp);
             }
             return result;
-        }
-
-        public static string PrintCarProperties(Car car, bool check)
-        {
-            string text = "";
-            if (check)
-                text = $"License plate: {car.LicensePlate}\n" +
-                                  $"Brand: {car.Brand}\n" +
-                                  $"Color: {car.Color}\n" +
-                                  $"Max speed: {car.MaxSpeed}Km/h\n" +
-                                  $"Validity: {car.Validity}";
-            else
-            {
-
-                text = $"{CorrectString(car.LicensePlate, 0)} | " +
-                       $"{CorrectString(car.Brand, 12)} | " +
-                       $"{CorrectString(car.Color, 6)} | " +
-                       $"{CorrectString(car.MaxSpeed.ToString() + "Km/h", 0)} | " +
-                       $"{CorrectString(car.Validity.ToString(), 0)}";
-            }
-
-            return text;
         }
 
         public static bool EqualArrays(List<string[]> table1, List<string[]> table2)
@@ -468,12 +451,35 @@ namespace Modelling_Practice
             logger.Error(message);
         }
 
-        public static string CorrectString(string element, int num)
+        public static string SelectRace()
         {
-            num = num - element.Length;
-            for (int i = 0; i < num; i++)
-                element += " ";
-            return element;
+            Console.Clear();
+            List<string> types = new List<string>() {
+                                                    "Illegal race",
+                                                    "Derby",
+                                                    "Drag race"
+                                                     };
+            for (int i = 0; i < types.Count; i++)
+                Console.WriteLine($"{i + 1}. {types[i]}");
+
+            Console.WriteLine("\nSelect a race type by it's index.:");
+            string index = Console.ReadLine();
+
+            if (!int.TryParse(index, out int x))
+                throw new InvalidInputException($"The entered value is not a number! ('{index}')");
+            else if (int.Parse(index) > types.Count || int.Parse(index) < 0)
+                throw new KeyNotFoundException($"There is no such option! ('{index}')");
+
+            Console.Clear();
+            return index;
+        }
+
+        public static string GetRaceName(string index)
+        {
+            if (index == "1") return "Illegal race";
+            else if (index == "2") return "Derby";
+            else if (index == "3") return "Drag race";
+            else throw new ArgumentException($"Invalid race ID! ('{index}')");
         }
     }
 }

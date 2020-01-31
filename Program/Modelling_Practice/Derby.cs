@@ -12,6 +12,7 @@ namespace Modelling_Practice
             MaxParticipant = 10;
             GetRaceDescription();
             Winner = Start(CarSelection(cars));
+            ShowParticipantsAndWinner();
         }
 
         protected override List<Car> CarSelection(List<Car> cars)

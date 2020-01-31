@@ -38,5 +38,35 @@ namespace Modelling_Practice
             }
             return false;
         }
+
+        public static string PrintCarProperties(Car car, bool check)
+        {
+            string text = "";
+            if (check)
+                text = $"License plate: {car.LicensePlate}\n" +
+                                  $"Brand: {car.Brand}\n" +
+                                  $"Color: {car.Color}\n" +
+                                  $"Max speed: {car.MaxSpeed}Km/h\n" +
+                                  $"Validity: {car.Validity}";
+            else
+            {
+
+                text = $"{CorrectString(car.LicensePlate, 0)} | " +
+                       $"{CorrectString(car.Brand, 12)} | " +
+                       $"{CorrectString(car.Color, 6)} | " +
+                       $"{CorrectString(car.MaxSpeed.ToString() + "Km/h", 0)} | " +
+                       $"{CorrectString(car.Validity.ToString(), 0)}";
+            }
+
+            return text;
+        }
+
+        public static string CorrectString(string element, int num)
+        {
+            num = num - element.Length;
+            for (int i = 0; i < num; i++)
+                element += " ";
+            return element;
+        }
     }
 }

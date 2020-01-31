@@ -8,13 +8,9 @@ namespace Modelling_Practice
     {
         virtual protected int MinimumSpeed { get; set; }
         virtual protected bool Validity { get; set; }
-        virtual public int MaxParticipant { get; set; }
-        public Car Winner { get; protected set; }
-        public List<Car> Cars { get; protected set; }
-        
-        //public abstract void AddCar(Car car);
-
-        //public abstract void DoRace();
+        virtual protected int MaxParticipant { get; set; }
+        protected Car Winner { get; set; }
+        protected List<Car> Cars { get; set; }
 
         protected abstract List<Car> CarSelection(List<Car> cars);
 
@@ -44,6 +40,16 @@ namespace Modelling_Practice
                               $" - Validity = {Validity}\n" +
                               $" - Max participants = {MaxParticipant}\n" +
                               $" - Minimum speed = {MinimumSpeed}Km/h");
+        }
+
+        protected void ShowParticipantsAndWinner()
+        {
+            Console.WriteLine($"\nParticipants: {Cars.Count}/{MaxParticipant}");
+            foreach (Car car in Cars)
+            {
+                Console.WriteLine(Common.PrintCarProperties(car, false));
+            }
+            Console.WriteLine($"\nThe winner is {Winner.LicensePlate} - {Winner.Brand}!");
         }
     }
 }

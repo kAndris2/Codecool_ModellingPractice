@@ -6,12 +6,26 @@ namespace Modelling_Practice
 {
     class Custom : Race
     {
-        public void AddCar(Car car)
+        public void AddCars(List<Car> car)
         {
-            Cars.Add(car);
+            Cars = car;
         }
 
-        public List<Car> GetRaceCars() { return Cars; }
+        public void DoRace()
+        {
+            MaxParticipant = Cars.Count;
+            GetRaceDescription();
+            Winner = Start(Cars);
+            ShowParticipantsAndWinner();
+        }
+
+        protected override void GetRaceDescription()
+        {
+            Console.WriteLine($"\n[DESCRIPTION]:\n" +
+                              $" - Validity = N/A\n" +
+                              $" - Max participants = N/A\n" +
+                              $" - Minimum speed = N/A");
+        }
 
         protected override List<Car> CarSelection(List<Car> cars) { return null; }
     }

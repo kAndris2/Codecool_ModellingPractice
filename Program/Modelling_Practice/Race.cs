@@ -29,8 +29,6 @@ namespace Modelling_Practice
                 }
             }
 
-            Cars = cars;
-
             return cars[rand.Next(cars.Count)];
         }
 
@@ -51,5 +49,7 @@ namespace Modelling_Practice
             }
             Console.WriteLine($"\nThe winner is {Winner.LicensePlate} - {Winner.Brand}!");
         }
+
+        public List<Car> GetRaceCars() { return Cars; }
     }
 }

@@ -381,26 +381,58 @@ namespace Modelling_Practice
                 Console.Clear();
 
                 Custom race = new Custom();
-                int choose = -1;
-                while (choose != 0)
+                List<Car> smt = new List<Car>();
+
+                while (true)
                 {
+                    logger.Info($"You are already selected '{smt.Count}'pcs of cars to the race.\n");
+
                     for (int i = 0; i < instance.Count; i++)
                         Console.WriteLine($"({i + 1}). {Common.PrintCarProperties(instance[i], false)}");
 
+                    Console.WriteLine("\nPlease type a car index to choose it or write '0' to start the race.");
                     string temp = Console.ReadLine();
-                    if (!int.TryParse(temp, out choose))
-                        throw new InvalidInputException($"The entered value is not a number! ('{temp}')");
+                    int choose = -1;
+                    if (!int.TryParse(temp, out int x))
+                    {
+                        Console.Clear();
+                        logger.Error($"The entered value is not a number! ('{temp}')");
+                        continue;
+                    }
                     else
                         choose = int.Parse(temp);
 
                     if (choose >= 1 && choose <= instance.Count - 1)
-                        if (!race.GetRaceCars().Contains(instance[choose - 1])) //Itt a hiba!
-                            race.AddCar(instance[choose - 1]);
+                        if (!smt.Contains(instance[choose - 1]))
+                        {
+                            smt.Add(instance[choose - 1]);
+                            Console.Clear();
+                        }
                         else
-                            logger.Error("This car is already participate in the race!\n");
+                        {
+                            Console.Clear();
+                            logger.Error("This car is already participate in the race!");
+                        }
+                    else if (choose == 0)
+                    {
+                        if (smt.Count == 0)
+                        {
+                            Console.Clear();
+                            logger.Error("Te fasz! Nem küldtél egy autót se versenyezni!");
+                        }
+                        else
+                            break;
+                    }
                     else
-                        throw new KeyNotFoundException($"There is no such option! ('{choose}')");
+                    {
+                        Console.Clear();
+                        logger.Error($"There is no such option! ('{choose}')");
+                    }
                 }
+                Console.Clear();
+                race.AddCars(smt);
+                logger.Info("You have started Custom race.");
+                race.DoRace();
 
                 return true;
             }

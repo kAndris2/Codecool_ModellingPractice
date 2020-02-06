@@ -418,7 +418,7 @@ namespace Modelling_Practice
                         if (smt.Count == 0)
                         {
                             Console.Clear();
-                            logger.Error("Te fasz! Nem küldtél egy autót se versenyezni!");
+                            logger.Error("You haven't selected any cars for the race!");
                         }
                         else
                             break;

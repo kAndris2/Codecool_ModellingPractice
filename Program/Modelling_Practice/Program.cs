@@ -316,7 +316,7 @@ namespace Modelling_Practice
                             car.Validity = bool.Parse(Console.ReadLine());
 
                         Console.Clear();
-                        logger.Info("You have succesfully updated the car's property.\n");
+                        logger.Info($"You have succesfully updated the car's {choose}.\n");
                         Console.WriteLine(PrintCarProperties(car, true));
                         break;
                     }
@@ -355,10 +355,16 @@ namespace Modelling_Practice
             {
                 if (data.GetCars().Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
+                else if (data.GetCars().Count - original.Count == 0)
+                    throw new ArgumentException("There are no new cars created!");
 
                 Console.Clear();
                 data.Save();
-                logger.Info("You have successfully saved your simulation");
+                logger.Info($"You have successfully saved {data.GetCars().Count - original.Count} new cars to your simulation.");
+
+                original.Clear();
+                foreach (Car car in data.GetCars())
+                    original.Add(car);
 
                 return true;
             }

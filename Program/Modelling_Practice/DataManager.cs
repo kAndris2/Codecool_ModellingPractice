@@ -7,41 +7,60 @@ namespace Modelling_Practice
 {
     class DataManager
     {
-        private static readonly List<string> BRANDS = new List<string>(new string[] {
-            "Alfa Romeo"
-        });
-
-        private List<Car> cars = new List<Car>();
+        public const string FILENAME = "Cars.csv";
+        private List<Car> Cars = new List<Car>();
 
         public DataManager()
         {
-            // read all cars data and save it
+            ConsoleLogger logger = new ConsoleLogger();
+            List<string[]> temp = null;
+
+            try
+            {
+                temp = Import_Data(FILENAME);
+            }
+            catch (FileNotFoundException e)
+            {
+                logger.Info($"The database is empty! - {e.Message}\n");
+            }
+
+            for (int i = 0; i < temp.Count; i++)
+            {
+                Cars.Add(new Car(temp[i]));
+            }
         }
+
+        public List<Car> GetCars() { return Cars; }
 
         public void AddCar(Car car)
         {
-            cars.Add(car);
+            Cars.Add(car);
         }
 
         public Car AddNewRandomCar()
         {
+            RandomProperty randp = new RandomProperty();
             Car car = new Car();
-            // init all fields EXCEPT license plate
-            // init license plate
-            while (cars.Contains(car))
+
+            while (true)
             {
-                car.LicensePlate = ""; // reinit random
+                string temp = randp.SetLicensePlate();
+                if (!Common.CheckValidPlate(Cars, temp))
+                {
+                    car.LicensePlate = temp;
+                    break;
+                }
             }
+
+            car.Brand = randp.SetBrand();
+            car.Color = randp.SetColor();
+            car.MaxSpeed = randp.SetMaxSpeed();
+            car.Validity = randp.SetValidity();
+
             return car;
         }
 
-        public void Save()
-        {
-
-        }
-
-        //FELADAT: Private-re!!
-        public List<string[]> Import_Data(String filename)
+        private List<string[]> Import_Data(String filename)
         {
             if (File.Exists(filename))
             {
@@ -61,14 +80,50 @@ namespace Modelling_Practice
             }
         }
 
-        public void Export_Data(String filename, List<string[]> table)
+        public void Save()
         {
+            List<string[]> table = GetProperties(Cars);
+
             string text = "";
             for (int i = 0; i < table.Count; i++)
             {
                 text += string.Join(";", table[i]) + "\n";
             }
-            File.WriteAllText(filename, text);
+            File.WriteAllText(FILENAME, text);
         }
+
+        private List<string[]> GetProperties(List<Car> table)
+        {
+            List<string[]> result = new List<string[]>();
+            for (int i = 0; i < table.Count; i++)
+            {
+                string[] temp = new string[] {
+                                                table[i].LicensePlate,
+                                                table[i].Brand,
+                                                table[i].Color,
+                                                table[i].MaxSpeed.ToString(),
+                                                table[i].Validity.ToString()
+                                             };
+                result.Add(temp);
+            }
+            return result;
+        }
+
+        public bool EqualInstances(List<Car> table)
+        {
+            if (Cars.Count.Equals(table.Count))
+            {
+                for (int i = 0; i < table.Count; i++)
+                {
+                    if (!Cars[i].Equals(table[i]))
+                        return false;
+                }
+            }
+            else
+                return false;
+            return true;
+        }
+
+        public void DeleteCar(int index) { Cars.RemoveAt(index); }
     }
 }

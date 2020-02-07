@@ -6,36 +6,23 @@ namespace Modelling_Practice
 {
     class IllegalRace : Race
     {
-        public IllegalRace(List<Car> cars)
+        public IllegalRace()
         {
             MaxParticipant = 15;
             MinimumSpeed = 220;
-            GetRaceDescription();
-            Winner = Start(CarSelection(cars));
-            ShowParticipantsAndWinner();
         }
 
-        protected override List<Car> CarSelection(List<Car> cars)
+        public override void AddCar(Car car)
         {
-            List<Car> selection = new List<Car>();
-
-            foreach (Car car in cars)
+            if (Cars.Count != MaxParticipant)
             {
                 if (car.MaxSpeed >= MinimumSpeed)
-                {
-                    selection.Add(car);
-                }
+                    Cars.Add(car);
+                else
+                    throw new ArgumentException($"This car doesn't meet with the requirments! - Too slow ('{car.MaxSpeed}km/h / {MinimumSpeed}km/h')");
             }
-
-            return selection;
-        }
-
-        protected override void GetRaceDescription()
-        {
-            Console.WriteLine($"\n[DESCRIPTION]:\n" +
-                              $" - Validity = N/A\n" +
-                              $" - Max participants = {MaxParticipant}\n" +
-                              $" - Minimum speed = {MinimumSpeed}Km/h");
+            else
+                throw new ArgumentException("You can't add this car to the race because it's full!");
         }
     }
 }

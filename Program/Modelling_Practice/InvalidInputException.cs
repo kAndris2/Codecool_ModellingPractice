@@ -8,7 +8,6 @@ namespace Modelling_Practice
     {
         public InvalidInputException (string message) : base(message)
         {
-
         }
     }
 }

@@ -6,29 +6,31 @@ namespace Modelling_Practice
 {
     class Drag : Race
     {
-        public Drag(List<Car> cars)
+        public Drag()
         {
-            Validity = true;
+            Validity = "Valid";
             MaxParticipant = 3;
             MinimumSpeed = 260;
-            GetRaceDescription();
-            Winner = Start(CarSelection(cars));
-            ShowParticipantsAndWinner();
         }
 
-        protected override List<Car> CarSelection(List<Car> cars)
+        public override void AddCar(Car car)
         {
-            List<Car> selection = new List<Car>();
+            bool check = Validity.Equals("Valid");
 
-            foreach (Car car in cars)
+            if (Cars.Count != MaxParticipant)
             {
-                if (car.Validity == Validity & car.MaxSpeed >= MinimumSpeed)
+                if (car.MaxSpeed >= MinimumSpeed)
                 {
-                    selection.Add(car);
+                    if (car.Validity == check)
+                        Cars.Add(car);
+                    else
+                        throw new ArgumentException("This car doesn't meet with the requirments! - The car's validity is Invalid!");
                 }
+                else
+                    throw new ArgumentException($"This car doesn't meet with the requirments! - Too slow ('{car.MaxSpeed}km/h / {MinimumSpeed}km/h')");
             }
-
-            return selection;
+            else
+                throw new ArgumentException("You can't add this car to the race because it's full!");
         }
     }
 }

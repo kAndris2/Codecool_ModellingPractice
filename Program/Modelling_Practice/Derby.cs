@@ -6,28 +6,25 @@ namespace Modelling_Practice
 {
     class Derby : Race
     { 
-        public Derby(List<Car> cars)
+        public Derby()
         {
-            Validity = false;
+            Validity = "Invalid";
             MaxParticipant = 10;
-            GetRaceDescription();
-            Winner = Start(CarSelection(cars));
-            ShowParticipantsAndWinner();
         }
 
-        protected override List<Car> CarSelection(List<Car> cars)
+        public override void AddCar(Car car)
         {
-            List<Car> selection = new List<Car>();
+            bool check = Validity.Equals("Valid");
 
-            foreach (Car car in cars)
+            if (Cars.Count != MaxParticipant)
             {
-                if (car.Validity == Validity)
-                {
-                    selection.Add(car);
-                }
+                if (car.Validity == check)
+                    Cars.Add(car);
+                else
+                    throw new ArgumentException("This car doesn't meet with the requirments! - The car's validity is Valid!");
             }
-
-            return selection;
+            else
+                throw new ArgumentException("You can't add this car to the race because it's full!");
         }
     }
 }

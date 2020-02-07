@@ -13,22 +13,9 @@ namespace Modelling_Practice
             DataManager data = new DataManager();
             ConsoleLogger logger = new ConsoleLogger();
             List<Car> car = new List<Car>();
-            //FELADAT: Ez legyen dictionary a Reflection miatt!
-            //List<Dictionary<string, string>> database = new List<Dictionary<string, string>>();
-            List<string[]> database = new List<string[]>();
 
-            try
-            {
-                database.AddRange(data.Import_Data(FILENAME));
-                for (int i = 0; i < database.Count; i++)
-                {
-                    car.Add(new Car(database[i]));
-                }
-            }
-            catch (FileNotFoundException e)
-            {
-                logger.Info($"The database is empty! - {e.Message}\n");
-            }
+            foreach (Car item in data.GetCars())
+                car.Add(item);
 
             while (true)
             {
@@ -47,7 +34,7 @@ namespace Modelling_Practice
                 catch (KeyNotFoundException e) { ManageException(logger, e.Message); }
                 catch (EmptyDatabaseException e) { ManageException(logger, e.Message); }
                 catch (InvalidInputException e) { ManageException(logger, e.Message); }
-                catch (NullReferenceException e) { ManageException(logger, e.Message); }
+                catch (ArgumentException e) { ManageException(logger, e.Message); }
             }
         }
         public static void HandleMenu()
@@ -58,12 +45,11 @@ namespace Modelling_Practice
                 ":fill    - Fills the database with randomly generated cars.",
                 ":create  - Create a specific car.",
                 ":list    - List already exist cars.",
-                ":find    - Get car info by license plate.",
+                ":find    - Get car info.",
                 ":update  - Update car.",
                 ":remove  - Delete car.",
                 ":save    - Saves the simulation to a file.",
-                ":race    - Make a race.",
-                ":crace   - Make custum race."
+                ":race    - Make a race."
             };
 
             for (int i = 0; i < options.Count; i++)
@@ -81,7 +67,7 @@ namespace Modelling_Practice
                 if (!File.Exists(FILENAME))
                     return false;
 
-                if (!EqualArrays(GetProperties(instance), data.Import_Data(FILENAME)))
+                if (!data.EqualInstances(instance))
                 {
                     Console.Clear();
                     logger.Warning("You didn't saved your database yet!\nYou really want to quit? (yes/no)");
@@ -95,26 +81,30 @@ namespace Modelling_Practice
                 }
                 else
                     Environment.Exit(-1);
+
                 return false;
             }
             else if (option == ":fill" || option == "1")
             {
                 Console.Clear();
                 Console.WriteLine("How many cars you want to create?");
-                int num = int.Parse(Console.ReadLine());
+                string num = Console.ReadLine();
+
+                if (!int.TryParse(num, out int x))
+                    throw new InvalidInputException($"The entered value is not a number! ('{num}')");
 
                 List<Car> cars = new List<Car>();
-                for (int i = 0; i < num; i++)
+                for (int i = 0; i < int.Parse(num); i++)
                 {
-                    cars.Add(new Car());
+                    cars.Add(data.AddNewRandomCar());
                 }
 
                 Console.Clear();
                 logger.Info($"You have created {num} pieces of cars.\n");
                 foreach (Car car in cars)
                 {
-                    instance.Add(car);
-                    Console.WriteLine(Common.PrintCarProperties(car, false));
+                    data.AddCar(car);
+                    Console.WriteLine(PrintCarProperties(car, false));
                 }
                 return true;
             }
@@ -159,7 +149,7 @@ namespace Modelling_Practice
 
                             if (check)
                             {
-                                if (!Common.CheckValidPlate(instance, temp))
+                                if (!Common.CheckValidPlate(data.GetCars(), temp))
                                 {
                                     car_data[i] = temp;
                                     break;
@@ -203,30 +193,31 @@ namespace Modelling_Practice
                         car_data[i] = Common.Capitalize(Console.ReadLine());
                 }
 
-                instance.Add(new Car(car_data));
+                Car car = new Car(car_data);
+                data.AddCar(car);
                 Console.Clear();
                 logger.Info("You have created a car.\n");
-                Console.WriteLine(Common.PrintCarProperties(instance[instance.Count - 1], true));
+                Console.WriteLine(PrintCarProperties(car, true));
 
                 return true;
             }
             else if (option == ":list" || option == "3")
             {
-                if (instance.Count == 0)
+                if (data.GetCars().Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
-                logger.Info($"There are {instance.Count} cars in the database.\n");
-                foreach (Car car in instance)
+                logger.Info($"There are {data.GetCars().Count} cars in the database.\n");
+                foreach (Car car in data.GetCars())
                 {
-                    Console.WriteLine(Common.PrintCarProperties(car, false));
+                    Console.WriteLine(PrintCarProperties(car, false));
                 }
 
                 return true;
             }
             else if (option == ":find" || option == "4")
             {
-                if (instance.Count == 0)
+                if (data.GetCars().Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
@@ -260,7 +251,7 @@ namespace Modelling_Practice
 
                 Console.Clear();
                 int count = 0;
-                foreach (Car car in instance)
+                foreach (Car car in data.GetCars())
                 {
                     if (index == 0 && car.LicensePlate.Equals(search) ||
                         index == 1 && car.Brand.Equals(search) ||
@@ -269,7 +260,7 @@ namespace Modelling_Practice
                         index == 4 && car.Validity.ToString().Equals(search))
                     {
                         count++;
-                        Console.WriteLine(Common.PrintCarProperties(car, false));
+                        Console.WriteLine(PrintCarProperties(car, false));
                     }
                 }
                 logger.Info($"Totally matches: {count}pc");
@@ -281,7 +272,7 @@ namespace Modelling_Practice
                 Console.Clear();
                 Console.WriteLine("Enter the car's license plate:");
                 string plate = Console.ReadLine().ToUpper();
-                if (!Common.CheckValidPlate(instance, plate))
+                if (!Common.CheckValidPlate(data.GetCars(), plate))
                     throw new InvalidInputException($"Invalid license plate! ('{plate}')");
 
                 Console.Clear();
@@ -303,7 +294,7 @@ namespace Modelling_Practice
                 Console.Clear();
                 Console.WriteLine($"What will be the new {choose}?");
 
-                foreach (Car car in instance)
+                foreach (Car car in data.GetCars())
                 {
                     if (car.LicensePlate.Equals(plate))
                     {
@@ -320,7 +311,7 @@ namespace Modelling_Practice
 
                         Console.Clear();
                         logger.Info("You have succesfully updated the car's property.\n");
-                        Console.WriteLine(Common.PrintCarProperties(car, true));
+                        Console.WriteLine(PrintCarProperties(car, true));
                         break;
                     }
                 }
@@ -329,36 +320,35 @@ namespace Modelling_Practice
             }
             else if (option == ":remove" || option == "6")
             {
-                if (instance.Count == 0)
+                if (data.GetCars().Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 Console.WriteLine("Enter the car's license plate:");
                 string plate = Console.ReadLine().ToUpper();
-                if (!Common.CheckValidPlate(instance, plate))
+                if (!Common.CheckValidPlate(data.GetCars(), plate))
                     throw new InvalidInputException($"Invalid license plate! ('{plate}')");
                 Console.Clear();
                 //
                 int index = -1;
-                foreach (Car car in instance)
+                foreach (Car car in data.GetCars())
                 {
                     index++;
                     if (plate.Equals(car.LicensePlate))
                     {
                         logger.Info("You have removed a car from a database.\n");
-                        Console.WriteLine(Common.PrintCarProperties(car, true));
+                        Console.WriteLine(PrintCarProperties(car, true));
                         break;
                     }
                 }
 
-                instance.RemoveAt(index);
+                data.DeleteCar(index);
                 return true;
             }
             else if (option == ":save" || option == "7")
             {
                 Console.Clear();
-                List<string[]> table = GetProperties(instance);
-                data.Export_Data(FILENAME, table);
+                data.Save();
                 logger.Info("You have successfully saved your simulation");
 
                 return true;
@@ -368,32 +358,37 @@ namespace Modelling_Practice
                 Console.Clear();
                 string index = SelectRace();
 
-                logger.Info($"You have started {GetRaceName(index)}.");
-
-                if (index == "1") new IllegalRace(instance);
-                else if (index == "2") new Derby(instance);
-                else if (index == "3") new Drag(instance);
-
-                return true;
-            }
-            else if (option == ":crace" || option == "9")
-            {
-                Console.Clear();
-
-                Custom race = new Custom();
-                List<Car> smt = new List<Car>();
+                Race race;
+                if (index == "1") race = new IllegalRace();
+                else if (index == "2") race = new Derby();
+                else if (index == "3") race = new Drag();
+                else
+                    throw new KeyNotFoundException($"There is no such option! ('{index}')");
 
                 while (true)
                 {
-                    logger.Info($"You are already selected '{smt.Count}'pcs of cars to the race.\n");
+                    logger.Info($"You have started {GetRaceName(index)}.");
 
-                    for (int i = 0; i < instance.Count; i++)
-                        Console.WriteLine($"({i + 1}). {Common.PrintCarProperties(instance[i], false)}");
+                    Console.WriteLine(
+                              $"\n[DESCRIPTION]:\n" +
+                              $" - Validity = {(race.Validity == null ? "N/A" : race.Validity)}\n" +
+                              $" - Max participants = {(race.MaxParticipant == 0 ? "N/A" : race.MaxParticipant.ToString())}\n" +
+                              $" - Minimum speed = {(race.MinimumSpeed == 0 ? "N/A" : race.MinimumSpeed.ToString() + "km/h\n")}"
+                              );
+
+                    logger.Info($"You are already selected '{race.GetRaceCars().Count}'pcs of cars to the race.\n");
+
+                    int i = -1;
+                    foreach (Car car in data.GetCars())
+                    {
+                        i++;
+                        Console.WriteLine($"({i + 1}). {PrintCarProperties(car, false)}");
+                    }
 
                     Console.WriteLine("\nPlease type a car index to choose it or write '0' to start the race.");
                     string temp = Console.ReadLine();
                     int choose = -1;
-                    if (!int.TryParse(temp, out int x))
+                    if (!int.TryParse(temp, out choose))
                     {
                         Console.Clear();
                         logger.Error($"The entered value is not a number! ('{temp}')");
@@ -402,10 +397,10 @@ namespace Modelling_Practice
                     else
                         choose = int.Parse(temp);
 
-                    if (choose >= 1 && choose <= instance.Count - 1)
-                        if (!smt.Contains(instance[choose - 1]))
+                    if (choose >= 1 && choose <= data.GetCars().Count - 1)
+                        if (!race.Contains(data.GetCars()[choose - 1]))
                         {
-                            smt.Add(instance[choose - 1]);
+                            race.AddCar(data.GetCars()[choose - 1]);
                             Console.Clear();
                         }
                         else
@@ -415,7 +410,7 @@ namespace Modelling_Practice
                         }
                     else if (choose == 0)
                     {
-                        if (smt.Count == 0)
+                        if (race.GetRaceCars().Count == 0)
                         {
                             Console.Clear();
                             logger.Error("You haven't selected any cars for the race!");
@@ -430,51 +425,20 @@ namespace Modelling_Practice
                     }
                 }
                 Console.Clear();
-                race.AddCars(smt);
-                logger.Info("You have started Custom race.");
+                logger.Info($"{GetRaceName(index)} result:");
                 race.DoRace();
+
+                Console.WriteLine($"\nParticipants: {race.GetRaceCars().Count}/{race.MaxParticipant}");
+                foreach (Car car in race.GetRaceCars())
+                {
+                    Console.WriteLine(PrintCarProperties(car, false));
+                }
+                Console.WriteLine($"\nThe winner is {race.GetWinner().ToString()}!");
 
                 return true;
             }
             else
                 throw new KeyNotFoundException($"There is no such option! ('{option}')");
-        }
-
-        public static List<string[]> GetProperties(List<Car> table)
-        {
-            List<string[]> result = new List<string[]>();
-            for (int i = 0; i < table.Count; i++)
-            {
-                string[] temp = new string[] {
-                                                table[i].LicensePlate,
-                                                table[i].Brand,
-                                                table[i].Color,
-                                                table[i].MaxSpeed.ToString(),
-                                                table[i].Validity.ToString()
-                                             };
-                result.Add(temp);
-            }
-            return result;
-        }
-
-        public static bool EqualArrays(List<string[]> table1, List<string[]> table2)
-        {
-            if (table1.Count.Equals(table2.Count))
-            {
-                for (int i = 0; i < table1.Count; i++)
-                {
-                    string[] item1 = table1[i];
-                    string[] item2 = table2[i];
-                    for (int n = 0; n < item1.Length; n++)
-                    {
-                        if (!item1[n].Equals(item2[n]))
-                            return false;
-                    }
-                }
-            }
-            else
-                return false;
-            return true;
         }
 
         public static void ManageException(ConsoleLogger logger, string message)
@@ -492,15 +456,13 @@ namespace Modelling_Practice
                                                     "Drag race"
                                                      };
             for (int i = 0; i < types.Count; i++)
-                Console.WriteLine($"{i + 1}. {types[i]}");
+                Console.WriteLine($"({i + 1}). - {types[i]}");
 
             Console.WriteLine("\nSelect a race type by it's index.:");
             string index = Console.ReadLine();
 
             if (!int.TryParse(index, out int x))
                 throw new InvalidInputException($"The entered value is not a number! ('{index}')");
-            else if (int.Parse(index) > types.Count || int.Parse(index) < 0)
-                throw new KeyNotFoundException($"There is no such option! ('{index}')");
 
             Console.Clear();
             return index;
@@ -512,6 +474,36 @@ namespace Modelling_Practice
             else if (index == "2") return "Derby";
             else if (index == "3") return "Drag race";
             else throw new ArgumentException($"Invalid race ID! ('{index}')");
+        }
+
+        public static string PrintCarProperties(Car car, bool check)
+        {
+            string text = "";
+            if (check)
+                text = $"License plate: {car.LicensePlate}\n" +
+                                  $"Brand: {car.Brand}\n" +
+                                  $"Color: {car.Color}\n" +
+                                  $"Max speed: {car.MaxSpeed}Km/h\n" +
+                                  $"Validity: {car.Validity}";
+            else
+            {
+
+                text = $"{CorrectString(car.LicensePlate, 0)} | " +
+                       $"{CorrectString(car.Brand, 12)} | " +
+                       $"{CorrectString(car.Color, 6)} | " +
+                       $"{CorrectString(car.MaxSpeed.ToString() + "Km/h", 0)} | " +
+                       $"{CorrectString(car.Validity.ToString(), 0)}";
+            }
+
+            return text;
+        }
+
+        public static string CorrectString(string element, int num)
+        {
+            num = num - element.Length;
+            for (int i = 0; i < num; i++)
+                element += " ";
+            return element;
         }
     }
 }

@@ -14,37 +14,7 @@ namespace Modelling_Practice
         public int MaxSpeed { get; set; }
         public bool Validity { get; set; }
 
-        //FELADAT: Progam.cs-ből mikor meghívom át kell adni a DataManager példányt!
-        public Car()
-        {
-            RandomProperty randp = new RandomProperty();
-            DataManager data = new DataManager();
-            List<string[]> database = new List<string[]>();
-
-            try
-            {
-                database = data.Import_Data("Cars.csv");
-                while (true)
-                {
-                    string temp = randp.SetLicensePlate();
-                    if (!Common.CheckValidPlate(database, temp))
-                    {
-                        LicensePlate = temp;
-                        break;
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                LicensePlate = randp.SetLicensePlate();
-            }
-
-            Brand = randp.SetBrand();
-            Color = randp.SetColor();
-            MaxSpeed = randp.SetMaxSpeed();
-            Validity = randp.SetValidity();
-        }
-
+        public Car() { }
         //FELADAT: public Car(Dictionary<string, string> data)
         public Car(string[] data)
         {
@@ -87,6 +57,18 @@ namespace Modelling_Practice
                         Validity = false;
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{LicensePlate} - {Brand}";
+        }
+
+        public override bool Equals(Object car)
+        {
+            if (LicensePlate == ((Car)car).LicensePlate )
+                return true;
+            return false;
         }
     }
 }

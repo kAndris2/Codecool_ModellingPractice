@@ -8,25 +8,23 @@ namespace Modelling_Practice
     class DataManager
     {
         public const string FILENAME = "Cars.csv";
-        private List<Car> Cars = new List<Car>();
+        private readonly List<Car> Cars = new List<Car>();
 
         public DataManager()
         {
             ConsoleLogger logger = new ConsoleLogger();
-            List<string[]> temp = null;
 
             try
             {
-                temp = Import_Data(FILENAME);
+                List<string[]> temp = Import_Data(FILENAME);
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    Cars.Add(new Car(temp[i]));
+                }
             }
             catch (FileNotFoundException e)
             {
                 logger.Info($"The database is empty! - {e.Message}\n");
-            }
-
-            for (int i = 0; i < temp.Count; i++)
-            {
-                Cars.Add(new Car(temp[i]));
             }
         }
 

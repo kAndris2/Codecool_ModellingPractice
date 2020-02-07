@@ -15,6 +15,7 @@ namespace Modelling_Practice
         public bool Validity { get; set; }
 
         public Car() { }
+
         //FELADAT: public Car(Dictionary<string, string> data)
         public Car(string[] data)
         {

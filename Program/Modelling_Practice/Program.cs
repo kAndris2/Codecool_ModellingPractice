@@ -355,7 +355,7 @@ namespace Modelling_Practice
             {
                 if (data.GetCars().Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
-                else if (data.GetCars().Count - original.Count == 0)
+                else if ( (data.GetCars().Count - original.Count) == 0)
                     throw new ArgumentException("There are no new cars created!");
 
                 Console.Clear();

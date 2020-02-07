@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Modelling_Practice
 {
-    class Car
+    public class Car
     {
         public string LicensePlate { get; set; }
         public string Brand { get; set; }

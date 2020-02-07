@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace Modelling_Practice
 {
     class DataManager
     {
-        public const string FILENAME = "Cars.csv";
+        public const string FILENAME = "Cars.xml";
         private readonly List<Car> Cars = new List<Car>();
 
         public DataManager()
@@ -16,15 +17,11 @@ namespace Modelling_Practice
 
             try
             {
-                List<string[]> temp = Import_Data(FILENAME);
-                for (int i = 0; i < temp.Count; i++)
-                {
-                    Cars.Add(new Car(temp[i]));
-                }
+                Cars.AddRange(Import());
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
-                logger.Info($"The database is empty! - {e.Message}\n");
+                logger.Info($"The database is empty! - File not found! ('{FILENAME}')\n");
             }
         }
 
@@ -58,26 +55,28 @@ namespace Modelling_Practice
             return car;
         }
 
-        private List<string[]> Import_Data(String filename)
+        private List<Car> Import()
         {
-            if (File.Exists(filename))
+            XmlSerializer reader = new XmlSerializer(typeof(List<Car>));
+            List<Car> i;
+            using (FileStream readfile = File.OpenRead(FILENAME))
             {
-                string[] data = File.ReadAllLines(filename);
-                List<string[]> table = new List<string[]>();
-
-                for (int i = 0; i < data.Length; i++)
-                {
-                    table.Add(data[i].Split(';'));
-                }
-
-                return table;
+                i = (List<Car>)reader.Deserialize(readfile);
             }
-            else
+            return i;
+        }
+
+        public void Save()
+        {
+            XmlSerializer writer = new XmlSerializer(typeof(List<Car>));
+
+            using (TextWriter writerfinal = new StreamWriter(FILENAME))
             {
-                throw new FileNotFoundException($"File not found! ('{filename}')");
+                writer.Serialize(writerfinal, Cars);
             }
         }
 
+        /*
         public void Save()
         {
             List<string[]> table = GetProperties(Cars);
@@ -89,6 +88,7 @@ namespace Modelling_Practice
             }
             File.WriteAllText(FILENAME, text);
         }
+        */
 
         private List<string[]> GetProperties(List<Car> table)
         {

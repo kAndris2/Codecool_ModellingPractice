@@ -46,18 +46,20 @@ namespace Modelling_Practice
                 ":find    - Get car info.",
                 ":update  - Update car.",
                 ":remove  - Delete car.",
+                ":clear   - Removes all elements from the database.",
                 ":save    - Saves the simulation to a file.",
+                ":reload  - ",
                 ":race    - Make a race."
             };
 
             for (int i = 0; i < options.Count; i++)
-                Console.WriteLine($"({i+1}). - {options[i]}");
-            Console.WriteLine($"\n(0). - :exit    - Exit.");
+                Console.WriteLine(options[i]);
+            Console.WriteLine("\n:exit    - Exit.");
         }
 
         public static bool Choose(List<Car> original, ConsoleLogger logger, DataManager data)
         {
-            Console.WriteLine("\nPlease enter a command or use the hotkeys: ");
+            Console.WriteLine($"\nPlease enter a command or use the hotkeys:");
             string option = Console.ReadLine();
 
             if (option == ":exit" || option == "0")
@@ -101,8 +103,10 @@ namespace Modelling_Practice
                 foreach (Car car in cars)
                 {
                     data.AddCar(car);
+                    /*
                     if (check)
                         original.Add(car);
+                    */
                     Console.WriteLine(PrintCarProperties(car, false));
                 }
                 return true;
@@ -289,6 +293,7 @@ namespace Modelling_Practice
                                                     "Max speed",
                                                     "Validity"
                                                    };
+
                 Console.WriteLine("Please type a property name to choose it.\n");
                 for (int i = 0; i < properties.Length; i++)
                 {
@@ -296,6 +301,9 @@ namespace Modelling_Practice
                 }
                 Console.WriteLine("\nWhich property you want to change?");
                 string choose = Console.ReadLine().ToLower();
+
+                if (!Array.Exists(properties, item => item == Common.Capitalize(choose)))
+                    throw new KeyNotFoundException($"There is no such option! ('{choose}')");
 
                 Console.Clear();
                 Console.WriteLine($"What will be the new {choose}?");
@@ -351,16 +359,28 @@ namespace Modelling_Practice
                 data.DeleteCar(index);
                 return true;
             }
-            else if (option == ":save" || option == "7")
+            else if (option == ":clear" || option == "7")
             {
                 if (data.GetCars().Count == 0)
+                    throw new EmptyDatabaseException("There are no cars in the database!");
+
+                Console.Clear();
+                logger.Info($"You have successfully delete '{data.GetCars().Count}' cars from the database.");
+                data.GetCars().Clear();
+
+                return true;
+            }
+            else if (option == ":save" || option == "8")
+            {
+                if (data.GetCars().Count == 0 && original.Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
                 else if ( (data.GetCars().Count - original.Count) == 0)
                     throw new ArgumentException("There are no new cars created!");
 
                 Console.Clear();
                 data.Save();
-                logger.Info($"You have successfully saved {data.GetCars().Count - original.Count} new cars to your simulation.");
+                logger.Info($"You have successfully saved {data.GetCars().Count - original.Count} cars to your simulation.");
+                Console.WriteLine($"{data.GetCars().Count} - {original.Count}");
 
                 original.Clear();
                 foreach (Car car in data.GetCars())
@@ -368,7 +388,22 @@ namespace Modelling_Practice
 
                 return true;
             }
-            else if (option == ":race" || option == "8")
+            else if (option == ":reload" || option == "9")
+            {
+                if (data.EqualInstances(original))
+                    throw new ArgumentException("You can't reload your database!");
+
+                Console.Clear();
+                data.GetCars().Clear();
+
+                foreach (Car car in original)
+                    data.AddCar(car);
+
+                logger.Info("You have successfully reload your database.");
+
+                return true;
+            }
+            else if (option == ":race" || option == "10")
             {
                 if (data.GetCars().Count == 0)
                     throw new EmptyDatabaseException("There are no cars in the database!");
@@ -502,7 +537,7 @@ namespace Modelling_Practice
                                   $"Brand: {car.Brand}\n" +
                                   $"Color: {car.Color}\n" +
                                   $"Max speed: {car.MaxSpeed}Km/h\n" +
-                                  $"Validity: {car.Validity}";
+                                  $"Validity: {(car.Validity == true ? "Valid" : "Invalid")}";
             else
             {
 
@@ -510,7 +545,7 @@ namespace Modelling_Practice
                        $"{CorrectString(car.Brand, 12)} | " +
                        $"{CorrectString(car.Color, 6)} | " +
                        $"{CorrectString(car.MaxSpeed.ToString() + "Km/h", 0)} | " +
-                       $"{CorrectString(car.Validity.ToString(), 0)}";
+                       $"{CorrectString((car.Validity == true ? "Valid" : "Invalid"), 0)}";
             }
 
             return text;

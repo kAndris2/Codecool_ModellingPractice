@@ -76,37 +76,6 @@ namespace Modelling_Practice
             }
         }
 
-        /*
-        public void Save()
-        {
-            List<string[]> table = GetProperties(Cars);
-
-            string text = "";
-            for (int i = 0; i < table.Count; i++)
-            {
-                text += string.Join(";", table[i]) + "\n";
-            }
-            File.WriteAllText(FILENAME, text);
-        }
-        */
-
-        private List<string[]> GetProperties(List<Car> table)
-        {
-            List<string[]> result = new List<string[]>();
-            for (int i = 0; i < table.Count; i++)
-            {
-                string[] temp = new string[] {
-                                                table[i].LicensePlate,
-                                                table[i].Brand,
-                                                table[i].Color,
-                                                table[i].MaxSpeed.ToString(),
-                                                table[i].Validity.ToString()
-                                             };
-                result.Add(temp);
-            }
-            return result;
-        }
-
         public bool EqualInstances(List<Car> table)
         {
             if (Cars.Count.Equals(table.Count))

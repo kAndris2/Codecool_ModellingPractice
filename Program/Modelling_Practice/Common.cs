@@ -10,7 +10,12 @@ namespace Modelling_Practice
         {
             if (string.IsNullOrEmpty(str))
                 return string.Empty;
-            return char.ToUpper(str[0]) + str.Substring(1).ToLower();
+
+            string[] temp = str.Split(" ");
+            for (int i = 0; i < temp.Length; i++)
+                temp[i] = char.ToUpper(temp[i][0]) + temp[i].Substring(1).ToLower();
+
+            return string.Join(" ", temp);
         }
 
         public static bool CheckValidPlate(List<Car> table, string plate)

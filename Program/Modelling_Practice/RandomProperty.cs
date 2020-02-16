@@ -30,7 +30,7 @@ namespace Modelling_Practice
                                                   "Hyundai", "Hummer", "Corvette", "Crysler", "Ferrari", "Lamborghini", "Bugatti", "Koenigsegg", "Kia",
                                                   "Mclaren", "Trabant", "Jeep", "Volvo", "Subaru", "Mini", "Dodge", "Suzuki", "Porsche", "Acura", "Lada",
                                                   "Peugeot", "Renault", "Ford", "Jaguar", "Maserati", "Saab", "Honda", "Lexus", "Daewoo", "Lancia", "Bentley",
-                                                  "Infiniti", "Citroen", "Aston martin", "Alfa romeo", "Gmc", "Cadillac", "Land rover", "Pagani", "Rolls royce",
+                                                  "Infiniti", "Citroen", "Aston Martin", "Alfa Romeo", "Gmc", "Cadillac", "Land Rover", "Pagani", "Rolls Royce",
                                                   "Tesla", "Dacia", "Chevrolet", "Lincoln", "Lotus", "Mg", "Seat", "Skoda", "Smart"};
             return brand_list[random.Next(brand_list.Count)];
         }

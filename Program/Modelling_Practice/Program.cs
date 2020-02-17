@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Modelling_Practice
+namespace cmd
 {
     class Program
     {
         static void Main(string[] args)
         {
-            DataManager data = new DataManager();
-            ConsoleLogger logger = new ConsoleLogger();
-            List<Car> cars = new List<Car>();
+            api.DataManager data = new api.DataManager();
+            api.ConsoleLogger logger = new api.ConsoleLogger();
+            List<api.Car> cars = new List<api.Car>();
 
-            foreach (Car car in data.GetCars())
+            foreach (api.Car car in data.GetCars())
                 cars.Add(car);
 
             while (true)
@@ -30,8 +30,8 @@ namespace Modelling_Practice
                     }
                 }
                 catch (KeyNotFoundException e) { ManageException(logger, e.Message); }
-                catch (EmptyDatabaseException e) { ManageException(logger, e.Message); }
-                catch (InvalidInputException e) { ManageException(logger, e.Message); }
+                catch (api.EmptyDatabaseException e) { ManageException(logger, e.Message); }
+                catch (api.InvalidInputException e) { ManageException(logger, e.Message); }
                 catch (ArgumentException e) { ManageException(logger, e.Message); }
             }
         }
@@ -57,7 +57,7 @@ namespace Modelling_Practice
             Console.WriteLine("\n:exit    - Exit.");
         }
 
-        public static bool Choose(List<Car> original, ConsoleLogger logger, DataManager data)
+        public static bool Choose(List<api.Car> original, api.ConsoleLogger logger, api.DataManager data)
         {
             Console.WriteLine($"\nPlease enter a command or use the hotkeys:");
             string option = Console.ReadLine();
@@ -88,9 +88,9 @@ namespace Modelling_Practice
                 string num = Console.ReadLine();
 
                 if (!int.TryParse(num, out int x))
-                    throw new InvalidInputException($"The entered value is not a number! ('{num}')");
+                    throw new api.InvalidInputException($"The entered value is not a number! ('{num}')");
 
-                List<Car> cars = new List<Car>();
+                List<api.Car> cars = new List<api.Car>();
                 for (int i = 0; i < int.Parse(num); i++)
                 {
                     cars.Add(data.AddNewRandomCar());
@@ -100,7 +100,7 @@ namespace Modelling_Practice
                 logger.Info($"You have created {num} pieces of cars.\n");
                 bool check = original.Count == 0;
 
-                foreach (Car car in cars)
+                foreach (api.Car car in cars)
                 {
                     data.AddCar(car);
                     /*
@@ -152,7 +152,7 @@ namespace Modelling_Practice
 
                             if (check)
                             {
-                                if (!Common.CheckValidPlate(data.GetCars(), temp))
+                                if (!api.Common.CheckValidPlate(data.GetCars(), temp))
                                 {
                                     car_data[i] = temp;
                                     break;
@@ -165,7 +165,7 @@ namespace Modelling_Practice
                                 }
                             }
                             else
-                                throw new InvalidInputException($"Invalid license plate format! ('{temp}')");
+                                throw new api.InvalidInputException($"Invalid license plate format! ('{temp}')");
                         }
                     }
                     else if (i == 3)
@@ -193,10 +193,10 @@ namespace Modelling_Practice
                         }
                     }
                     else
-                        car_data[i] = Common.Capitalize(Console.ReadLine());
+                        car_data[i] = api.Common.Capitalize(Console.ReadLine());
                 }
 
-                Car car = new Car(car_data);
+                api.Car car = new api.Car(car_data);
 
                 data.AddCar(car);
                 if (original.Count == 0)
@@ -211,11 +211,11 @@ namespace Modelling_Practice
             else if (option == ":list" || option == "3")
             {
                 if (data.GetCars().Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 logger.Info($"There are {data.GetCars().Count} cars in the database.\n");
-                foreach (Car car in data.GetCars())
+                foreach (api.Car car in data.GetCars())
                 {
                     Console.WriteLine(PrintCarProperties(car, false));
                 }
@@ -225,7 +225,7 @@ namespace Modelling_Practice
             else if (option == ":find" || option == "4")
             {
                 if (data.GetCars().Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 Console.WriteLine("What do you want to look for?\n");
@@ -246,7 +246,7 @@ namespace Modelling_Practice
                 if (int.TryParse(input, out index))
                     index = int.Parse(input) - 1;
                 else
-                    throw new InvalidInputException($"Invalid type - string != int! ('{input}')");
+                    throw new api.InvalidInputException($"Invalid type - string != int! ('{input}')");
 
                 Console.Clear();
                 Console.WriteLine($"Please enter the {properties[index].ToLower()} what are you looking for.");
@@ -254,11 +254,11 @@ namespace Modelling_Practice
                 if (index == 0)
                     search = Console.ReadLine().ToUpper();
                 else
-                    search = Common.Capitalize(Console.ReadLine());
+                    search = api.Common.Capitalize(Console.ReadLine());
 
                 Console.Clear();
                 int count = 0;
-                foreach (Car car in data.GetCars())
+                foreach (api.Car car in data.GetCars())
                 {
                     if (index == 0 && car.LicensePlate.Equals(search) ||
                         index == 1 && car.Brand.Equals(search) ||
@@ -277,13 +277,13 @@ namespace Modelling_Practice
             else if (option == ":update" || option == "5")
             {
                 if (data.GetCars().Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 Console.WriteLine("Enter the car's license plate:");
                 string plate = Console.ReadLine().ToUpper();
-                if (!Common.CheckValidPlate(data.GetCars(), plate))
-                    throw new InvalidInputException($"Invalid license plate! ('{plate}')");
+                if (!api.Common.CheckValidPlate(data.GetCars(), plate))
+                    throw new api.InvalidInputException($"Invalid license plate! ('{plate}')");
 
                 Console.Clear();
                 string[] properties = new string[] {
@@ -302,22 +302,22 @@ namespace Modelling_Practice
                 Console.WriteLine("\nWhich property you want to change?");
                 string choose = Console.ReadLine().ToLower();
 
-                if (!Array.Exists(properties, item => item == Common.Capitalize(choose)))
+                if (!Array.Exists(properties, item => item == api.Common.Capitalize(choose)))
                     throw new KeyNotFoundException($"There is no such option! ('{choose}')");
 
                 Console.Clear();
                 Console.WriteLine($"What will be the new {choose}?");
 
-                foreach (Car car in data.GetCars())
+                foreach (api.Car car in data.GetCars())
                 {
                     if (car.LicensePlate.Equals(plate))
                     {
                         if (choose == "license plate")
                             car.LicensePlate = Console.ReadLine();
                         else if (choose == "brand")
-                            car.Brand = Common.Capitalize(Console.ReadLine());
+                            car.Brand = api.Common.Capitalize(Console.ReadLine());
                         else if (choose == "color")
-                            car.Color = Common.Capitalize(Console.ReadLine());
+                            car.Color = api.Common.Capitalize(Console.ReadLine());
                         else if (choose == "max speed")
                             car.MaxSpeed = int.Parse(Console.ReadLine());
                         else if (choose == "validity")
@@ -335,17 +335,17 @@ namespace Modelling_Practice
             else if (option == ":remove" || option == "6")
             {
                 if (data.GetCars().Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 Console.WriteLine("Enter the car's license plate:");
                 string plate = Console.ReadLine().ToUpper();
-                if (!Common.CheckValidPlate(data.GetCars(), plate))
-                    throw new InvalidInputException($"Invalid license plate! ('{plate}')");
+                if (!api.Common.CheckValidPlate(data.GetCars(), plate))
+                    throw new api.InvalidInputException($"Invalid license plate! ('{plate}')");
                 Console.Clear();
                 //
                 int index = -1;
-                foreach (Car car in data.GetCars())
+                foreach (api.Car car in data.GetCars())
                 {
                     index++;
                     if (plate.Equals(car.LicensePlate))
@@ -362,7 +362,7 @@ namespace Modelling_Practice
             else if (option == ":clear" || option == "7")
             {
                 if (data.GetCars().Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 logger.Info($"You have successfully delete '{data.GetCars().Count}' cars from the database.");
@@ -373,7 +373,7 @@ namespace Modelling_Practice
             else if (option == ":save" || option == "8")
             {
                 if (data.GetCars().Count == 0 && original.Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
                 else if ( (data.GetCars().Count - original.Count) == 0)
                     throw new ArgumentException("There are no new cars created!");
 
@@ -383,7 +383,7 @@ namespace Modelling_Practice
                 Console.WriteLine($"{data.GetCars().Count} - {original.Count}");
 
                 original.Clear();
-                foreach (Car car in data.GetCars())
+                foreach (api.Car car in data.GetCars())
                     original.Add(car);
 
                 return true;
@@ -396,7 +396,7 @@ namespace Modelling_Practice
                 Console.Clear();
                 data.GetCars().Clear();
 
-                foreach (Car car in original)
+                foreach (api.Car car in original)
                     data.AddCar(car);
 
                 logger.Info("You have successfully reload your database.");
@@ -406,15 +406,15 @@ namespace Modelling_Practice
             else if (option == ":race" || option == "10")
             {
                 if (data.GetCars().Count == 0)
-                    throw new EmptyDatabaseException("There are no cars in the database!");
+                    throw new api.EmptyDatabaseException("There are no cars in the database!");
 
                 Console.Clear();
                 string index = SelectRace();
 
-                Race race;
-                if (index == "1") race = new IllegalRace();
-                else if (index == "2") race = new Derby();
-                else if (index == "3") race = new Drag();
+                api.Race race;
+                if (index == "1") race = new api.IllegalRace();
+                else if (index == "2") race = new api.Derby();
+                else if (index == "3") race = new api.Drag();
                 else
                     throw new KeyNotFoundException($"There is no such option! ('{index}')");
 
@@ -432,7 +432,7 @@ namespace Modelling_Practice
                     logger.Info($"You are already selected '{race.GetRaceCars().Count}'pcs of cars to the race.\n");
 
                     int i = -1;
-                    foreach (Car car in data.GetCars())
+                    foreach (api.Car car in data.GetCars())
                     {
                         i++;
                         Console.WriteLine($"({i + 1}). {PrintCarProperties(car, false)}");
@@ -482,7 +482,7 @@ namespace Modelling_Practice
                 race.DoRace();
 
                 Console.WriteLine($"\nParticipants: {race.GetRaceCars().Count}/{race.MaxParticipant}");
-                foreach (Car car in race.GetRaceCars())
+                foreach (api.Car car in race.GetRaceCars())
                 {
                     Console.WriteLine(PrintCarProperties(car, false));
                 }
@@ -494,7 +494,7 @@ namespace Modelling_Practice
                 throw new KeyNotFoundException($"There is no such option! ('{option}')");
         }
 
-        public static void ManageException(ConsoleLogger logger, string message)
+        public static void ManageException(api.ConsoleLogger logger, string message)
         {
             Console.Clear();
             logger.Error(message);
@@ -515,7 +515,7 @@ namespace Modelling_Practice
             string index = Console.ReadLine();
 
             if (!int.TryParse(index, out int x))
-                throw new InvalidInputException($"The entered value is not a number! ('{index}')");
+                throw new api.InvalidInputException($"The entered value is not a number! ('{index}')");
 
             Console.Clear();
             return index;
@@ -529,7 +529,7 @@ namespace Modelling_Practice
             else throw new ArgumentException($"Invalid race ID! ('{index}')");
         }
 
-        public static string PrintCarProperties(Car car, bool check)
+        public static string PrintCarProperties(api.Car car, bool check)
         {
             string text;
             if (check)

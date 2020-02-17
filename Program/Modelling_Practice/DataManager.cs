@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Modelling_Practice
+namespace api
 {
     class DataManager
     {

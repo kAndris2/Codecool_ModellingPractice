@@ -93,5 +93,14 @@ namespace api
 
         public void DeleteCar(int index) { Cars.RemoveAt(index); }
         public RandomProperty GetRP() { return RandProp; }
+
+        public void ChooseDefault()
+        {
+            foreach(Car car in Cars)
+            {
+                if (car.Choosed)
+                    car.Choosed = false;
+            }
+        }
     }
 }

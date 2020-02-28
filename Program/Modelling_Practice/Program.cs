@@ -38,15 +38,15 @@ namespace cmd
             Console.WriteLine("Simulation commands:\n");
             List<string> options = new List<string>
             {
-                ":fill    - Fills the database with randomly generated cars.",
+                //":fill    - Fills the database with randomly generated cars.",
                 ":create  - Create a specific car.",
-                ":list    - List already exist cars.",
+                ":list    - Lists existing cars.",
                 ":find    - Get car info.",
                 ":update  - Update car.",
                 ":remove  - Delete car.",
-                ":clear   - Removes all elements from the database.",
+                //":clear   - Removes all elements from the database.",
                 ":save    - Saves the simulation to a file.",
-                ":reload  - Restores the database to boot state.",
+                //":reload  - Restores the database to boot state.",
                 ":race    - Make a race."
             };
 
@@ -400,7 +400,6 @@ namespace cmd
                 Console.Clear();
                 data.Save();
                 logger.Info($"You have successfully saved {data.GetCars().Count - original.Count} cars to your simulation.");
-                Console.WriteLine($"{data.GetCars().Count} - {original.Count}");
 
                 original.Clear();
                 foreach (Car car in data.GetCars())
@@ -457,7 +456,7 @@ namespace cmd
                             Console.WriteLine(PrintCarProperties(car, false));
                     }
 
-                    Console.WriteLine("\nPlease type a car license plate to choose it or write '0' to start the race.");
+                    Console.WriteLine("\nPlease type a car's license plate to choose it or write '0' to start the race.");
                     string plate = Console.ReadLine().ToUpper();
 
                     if (plate == "0")
@@ -508,6 +507,7 @@ namespace cmd
                 Console.Clear();
                 logger.Info($"{GetRaceName(index)} result:");
                 race.DoRace();
+                data.ChooseDefault();
 
                 Console.WriteLine($"\nParticipants: {race.GetRaceCars().Count}/{race.MaxParticipant}");
                 foreach (Car car in race.GetRaceCars())

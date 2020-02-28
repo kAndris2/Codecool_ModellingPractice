@@ -30,5 +30,23 @@ namespace api
             }
             return false;
         }
+
+        public static bool CheckPlateFormat(string input)
+        {
+            if (input.Length == 7)
+            {
+                for (int n = 0; n < input.Length; n++)
+                {
+                    if (n <= 2 & !char.IsLetter(input[n]) ||
+                         input[3] != '-' || n >= 4 & !char.IsNumber(input[n]))
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+                return false;
+            return true;
+        }
     }
 }

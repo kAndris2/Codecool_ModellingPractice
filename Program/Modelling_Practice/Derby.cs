@@ -21,10 +21,10 @@ namespace api
                 if (car.Validity == check)
                     Cars.Add(car);
                 else
-                    throw new ArgumentException("This car doesn't meet with the requirments! - The car's validity is Valid!");
+                    throw new InvalidCar("This car doesn't meet with the requirments! - The car's validity is Valid!");
             }
             else
-                throw new ArgumentException("You can't add this car to the race because it's full!");
+                throw new InvalidCar("You can't add this car to the race because it's full!");
         }
     }
 }

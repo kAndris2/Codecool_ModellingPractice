@@ -13,21 +13,12 @@ namespace api
         public string Color { get; set; }
         public int MaxSpeed { get; set; }
         public bool Validity { get; set; }
+        public bool Choosed { get; set; }
 
         public Car() { }
 
-        //FELADAT: public Car(Dictionary<string, string> data)
         public Car(string[] data)
         {
-            /*
-            PropertyInfo[] properties = typeof(Car).GetProperties();
-
-            foreach (PropertyInfo prop in properties)
-            {
-               prop.SetValue(this, data[prop.Name]);
-            }
-            */
-          
             foreach (string item in data)
             {
                 if (LicensePlate == null)

@@ -24,13 +24,13 @@ namespace api
                     if (car.Validity == check)
                         Cars.Add(car);
                     else
-                        throw new ArgumentException("This car doesn't meet with the requirments! - The car's validity is Invalid!");
+                        throw new InvalidCar("This car doesn't meet with the requirments! - The car's validity is Invalid!");
                 }
                 else
-                    throw new ArgumentException($"This car doesn't meet with the requirments! - Too slow ('{car.MaxSpeed}km/h / {MinimumSpeed}km/h')");
+                    throw new InvalidCar($"This car doesn't meet with the requirments! - Too slow ('{car.MaxSpeed}km/h / {MinimumSpeed}km/h')");
             }
             else
-                throw new ArgumentException("You can't add this car to the race because it's full!");
+                throw new InvalidCar("You can't add this car to the race because it's full!");
         }
     }
 }

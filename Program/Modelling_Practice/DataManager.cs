@@ -8,12 +8,13 @@ namespace api
 {
     class DataManager
     {
-        public const string FILENAME = "Cars.xml";
+        private const string FILENAME = "Cars.xml";
         private readonly List<Car> Cars = new List<Car>();
+        private RandomProperty RandProp;
 
         public DataManager()
         {
-            ConsoleLogger logger = new ConsoleLogger();
+            RandProp = new RandomProperty();
 
             try
             {
@@ -21,7 +22,7 @@ namespace api
             }
             catch (FileNotFoundException)
             {
-                logger.Info($"The database is empty! - File not found! ('{FILENAME}')\n");
+                new ConsoleLogger().Info($"The database is empty! - File not found! ('{FILENAME}')\n");
             }
         }
 
@@ -34,12 +35,11 @@ namespace api
 
         public Car AddNewRandomCar()
         {
-            RandomProperty randp = new RandomProperty();
             Car car = new Car();
 
             while (true)
             {
-                string temp = randp.SetLicensePlate();
+                string temp = RandProp.SetLicensePlate();
                 if (!Common.CheckValidPlate(Cars, temp))
                 {
                     car.LicensePlate = temp;
@@ -47,10 +47,10 @@ namespace api
                 }
             }
 
-            car.Brand = randp.SetBrand();
-            car.Color = randp.SetColor();
-            car.MaxSpeed = randp.SetMaxSpeed();
-            car.Validity = randp.SetValidity();
+            car.Brand = RandProp.SetBrand();
+            car.Color = RandProp.SetColor();
+            car.MaxSpeed = RandProp.SetMaxSpeed();
+            car.Validity = RandProp.SetValidity();
 
             return car;
         }
@@ -92,5 +92,6 @@ namespace api
         }
 
         public void DeleteCar(int index) { Cars.RemoveAt(index); }
+        public RandomProperty GetRP() { return RandProp; }
     }
 }
